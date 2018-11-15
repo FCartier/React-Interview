@@ -23,14 +23,18 @@ class Table extends React.Component {
     handleSubscribe() {
         const newSymbol = this.symbolInput.current.value;
         feed.subscribe(newSymbol);
-        this.setState({ stocks: [...this.state.stocks, newSymbol] });
+        this.setState(({ stocks }) => (stocks.indexOf(newSymbol) > -1 ? stocks : { stocks: [...this.state.stocks, newSymbol] }))
     }
 
     handleUnsubscribe(stock) {
         this.setState(({ stocks }) => (
-            { stocks: stocks.filter((item) => item.symbol !== stock.symbol) })
+            { stocks: stocks.filter((item) => item !== stock.symbol) })
         );
         feed.unsubscribe(stock.symbol);
+    }
+
+    setColor(value) {
+        return value > 0 ? "green-text" : "red-text";
     }
 
     render() {
@@ -65,7 +69,7 @@ class Table extends React.Component {
                                             <td>{stock.high}</td>
                                             <td>{stock.low}</td>
                                             <td>{stock.last}</td>
-                                            <td>{stock.change}</td>
+                                            <td className={this.setColor(stock.change)}>{stock.change}</td>
                                             <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
                                         </tr>
                                     ))
