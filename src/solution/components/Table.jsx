@@ -9,52 +9,24 @@ class Table extends React.Component {
     constructor(props) {
         super(props);
         this.symbolInput = React.createRef();
-        // this.state = {
-        //     stocks: ["BA", "MCD"],
-        //     stockUpdates: {}
-        // }
     }
 
     componentDidMount() {
-        // feed.onChange((stock) =>
-        //     this.setState(({ stockUpdates }) => ({ stockUpdates: { ...stockUpdates, [stock.symbol]: stock } }))
-        // );
+        feed.onChange((stock) => this.props.stockActions.updateStock(stock));
     }
 
     handleSubscribe() {
         const newSymbol = this.symbolInput.current.value;
         this.props.stockActions.subscribeStock(newSymbol);
-        //feed.subscribe(newSymbol);
-        // this.setState(({ stocks }) => (stocks.indexOf(newSymbol) > -1 ? stocks : { stocks: [...this.state.stocks, newSymbol] }))
     }
 
     handleUnsubscribe(stock) {
-        // this.setState(({ stocks }) => (
-        //     { stocks: stocks.filter((item) => item !== stock.symbol) })
-        // );
-        feed.unsubscribe(stock.symbol);
+        this.props.stockActions.unsubscribeStock(stock.symbol);
     }
 
     setColor(value) {
         return value > 0 ? "green-text" : "red-text";
     }
-
-    // {
-    //     { this.state.stocks
-    //         .filter((stock) => this.state.stockUpdates[stock])
-    //         .map((stock) => this.state.stockUpdates[stock])
-    //         .map((stock) => (
-    //             <tr key={stock.symbol}>
-    //                 <td>{stock.symbol}</td>
-    //                 <td>{stock.open}</td>
-    //                 <td>{stock.high}</td>
-    //                 <td>{stock.low}</td>
-    //                 <td>{stock.last}</td>
-    //                 <td className={this.setColor(stock.change)}>{stock.change}</td>
-    //                 <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
-    //             </tr>
-    //         )) }
-    // }
 
     render() {
         return (
@@ -77,7 +49,22 @@ class Table extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            
+                            {
+                                this.props.stocks
+                                    .filter((stock) => this.props.stockUpdates[stock])
+                                    .map((stock) => this.props.stockUpdates[stock])
+                                    .map((stock) => (
+                                        <tr key={stock.symbol}>
+                                            <td>{stock.symbol}</td>
+                                            <td>{stock.open}</td>
+                                            <td>{stock.high}</td>
+                                            <td>{stock.low}</td>
+                                            <td>{stock.last}</td>
+                                            <td className={this.setColor(stock.change)}>{stock.change}</td>
+                                            <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
+                                        </tr>
+                                    ))
+                            }
                         </tbody>
                     </table>
                 </div>
@@ -93,8 +80,8 @@ Table.propTypes = {
 
 function mapStateToProps(state) {
     return {
-        stocks: state.stocks,
-        stockUpdates: state.stockUpdates
+        stocks: state.stockReducer.stocks,
+        stockUpdates: state.stockReducer.stockUpdates
     };
 }
 

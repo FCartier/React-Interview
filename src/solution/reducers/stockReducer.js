@@ -8,14 +8,16 @@ export default function stockReducer(state = initialState, action) {
             console.log('SUBSCRIBE_TO_STOCK');
             const newStock = (state.stocks.indexOf(action.symbol) > -1 ? state.stocks : [...state.stocks, action.symbol] )
             return {...state, stocks: newStock};
-            break;
-        case UPDATE_STOCK:
+
+            case UPDATE_STOCK:
             // Update the updateStock map
             console.log('UPDATE_STOCK')
-            break;
-        case UNSUBSCRIBE_TO_STOCK:
+            return { ...state, stockUpdates: { ...state.stockUpdates, [action.stock.symbol]: action.stock } }
+
+            case UNSUBSCRIBE_TO_STOCK:
             //Remove the stock
             console.log('UNSUBSCRIBE_TO_STOCK')
+            return { ...state, stocks: state.stocks.filter((item) => item !== action.symbol)}
             break;
 
         default:

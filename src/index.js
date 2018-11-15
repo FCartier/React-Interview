@@ -36,7 +36,6 @@ class ErrorBoundary extends React.Component {
   }
 }
 
-//const store = createStore(rootReducer);
 const store = configureStore();
 
 ReactDOM.render(
