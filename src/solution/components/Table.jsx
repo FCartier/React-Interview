@@ -1,41 +1,60 @@
 import React from "react";
 import feed from "../feed";
-//import Row from './Row';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
+import * as stockActions from '../actions/stockActions';
 
 class Table extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.symbolInput = React.createRef();
-        this.state = {
-            stocks: ["BA", "MCD"],
-            stockUpdates: {}
-        }
+        // this.state = {
+        //     stocks: ["BA", "MCD"],
+        //     stockUpdates: {}
+        // }
     }
 
     componentDidMount() {
-        // For testing purpose ony, reñove it before delivery
-        feed.subscribe(this.state.stocks);
-        feed.onChange((stock) =>
-            this.setState(({ stockUpdates }) => ({ stockUpdates: { ...stockUpdates, [stock.symbol]: stock } }))
-        );
+        // feed.onChange((stock) =>
+        //     this.setState(({ stockUpdates }) => ({ stockUpdates: { ...stockUpdates, [stock.symbol]: stock } }))
+        // );
     }
 
     handleSubscribe() {
         const newSymbol = this.symbolInput.current.value;
-        feed.subscribe(newSymbol);
-        this.setState(({ stocks }) => (stocks.indexOf(newSymbol) > -1 ? stocks : { stocks: [...this.state.stocks, newSymbol] }))
+        this.props.stockActions.subscribeStock(newSymbol);
+        //feed.subscribe(newSymbol);
+        // this.setState(({ stocks }) => (stocks.indexOf(newSymbol) > -1 ? stocks : { stocks: [...this.state.stocks, newSymbol] }))
     }
 
     handleUnsubscribe(stock) {
-        this.setState(({ stocks }) => (
-            { stocks: stocks.filter((item) => item !== stock.symbol) })
-        );
+        // this.setState(({ stocks }) => (
+        //     { stocks: stocks.filter((item) => item !== stock.symbol) })
+        // );
         feed.unsubscribe(stock.symbol);
     }
 
     setColor(value) {
         return value > 0 ? "green-text" : "red-text";
     }
+
+    // {
+    //     { this.state.stocks
+    //         .filter((stock) => this.state.stockUpdates[stock])
+    //         .map((stock) => this.state.stockUpdates[stock])
+    //         .map((stock) => (
+    //             <tr key={stock.symbol}>
+    //                 <td>{stock.symbol}</td>
+    //                 <td>{stock.open}</td>
+    //                 <td>{stock.high}</td>
+    //                 <td>{stock.low}</td>
+    //                 <td>{stock.last}</td>
+    //                 <td className={this.setColor(stock.change)}>{stock.change}</td>
+    //                 <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
+    //             </tr>
+    //         )) }
+    // }
 
     render() {
         return (
@@ -58,22 +77,7 @@ class Table extends React.Component {
                             </tr>
                         </thead>
                         <tbody>
-                            {
-                                this.state.stocks
-                                    .filter((stock) => this.state.stockUpdates[stock])
-                                    .map((stock) => this.state.stockUpdates[stock])
-                                    .map((stock) => (
-                                        <tr key={stock.symbol}>
-                                            <td>{stock.symbol}</td>
-                                            <td>{stock.open}</td>
-                                            <td>{stock.high}</td>
-                                            <td>{stock.low}</td>
-                                            <td>{stock.last}</td>
-                                            <td className={this.setColor(stock.change)}>{stock.change}</td>
-                                            <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
-                                        </tr>
-                                    ))
-                            }
+                            
                         </tbody>
                     </table>
                 </div>
@@ -82,4 +86,25 @@ class Table extends React.Component {
     }
 }
 
-export default Table;
+Table.propTypes = {
+    stockActions: PropTypes.object,
+    stocks: PropTypes.array
+};
+
+function mapStateToProps(state) {
+    return {
+        stocks: state.stocks,
+        stockUpdates: state.stockUpdates
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        stockActions: bindActionCreators(stockActions, dispatch)
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Table);
