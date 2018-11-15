@@ -1,24 +1,36 @@
 import React from "react";
 import feed from "../feed";
+//import Row from './Row';
 
 class Table extends React.Component {
     constructor() {
         super();
         this.symbolInput = React.createRef();
         this.state = {
-            stocks: []
+            stocks: ["BA", "MCD"],
+            stockUpdates: {}
         }
     }
 
     componentDidMount() {
-        feed.onChange((stock) => console.log(stock));
+        // For testing purpose ony, reñove it before delivery
+        feed.subscribe(this.state.stocks);
+        feed.onChange((stock) =>
+            this.setState(({ stockUpdates }) => ({ stockUpdates: { ...stockUpdates, [stock.symbol]: stock } }))
+        );
     }
 
     handleSubscribe() {
         const newSymbol = this.symbolInput.current.value;
         feed.subscribe(newSymbol);
         this.setState({ stocks: [...this.state.stocks, newSymbol] });
+    }
 
+    handleUnsubscribe(stock) {
+        this.setState(({ stocks }) => (
+            { stocks: stocks.filter((item) => item.symbol !== stock.symbol) })
+        );
+        feed.unsubscribe(stock.symbol);
     }
 
     render() {
@@ -32,14 +44,32 @@ class Table extends React.Component {
                     <table>
                         <thead>
                             <tr>
+                                <th>Symbol</th>
+                                <th>Open</th>
+                                <th>High</th>
+                                <th>Low</th>
+                                <th>Last</th>
+                                <th>Change</th>
                                 <th></th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td></td>
-                                <td></td>
-                            </tr>
+                            {
+                                this.state.stocks
+                                    .filter((stock) => this.state.stockUpdates[stock])
+                                    .map((stock) => this.state.stockUpdates[stock])
+                                    .map((stock) => (
+                                        <tr key={stock.symbol}>
+                                            <td>{stock.symbol}</td>
+                                            <td>{stock.open}</td>
+                                            <td>{stock.high}</td>
+                                            <td>{stock.low}</td>
+                                            <td>{stock.last}</td>
+                                            <td>{stock.change}</td>
+                                            <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
+                                        </tr>
+                                    ))
+                            }
                         </tbody>
                     </table>
                 </div>
