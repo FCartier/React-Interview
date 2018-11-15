@@ -1,0 +1,62 @@
+body {
+  margin: 0;
+  padding: 0px;
+  font-family: 'Open Sans', Arial, sans-serif;
+  font-size: 14px;
+  color: #666;
+  line-height: 1.7em;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f4f4f4;
+}
+
+.nav {
+  background-color: white;
+  height: 100px;
+  position: relative;
+}
+
+.diagram {
+  width: 700px;
+}
+
+.logo {
+  padding: 20px;
+}
+
+.app-container {
+  display: flex;
+}
+
+.instructions {
+  margin: 20px;
+}
+
+.container {
+  padding: 20px;
+  border-left: solid lightgrey 2px;
+}
+
+.sub-header {
+  color: #205888;
+  font-weight: bold;
+}
+
+ul {
+  list-style-type: disc;
+  padding: 0 0 23px 16px;
+  line-height: 26px;
+}
+
+ol {
+  padding: 0 0 23px 16px;
+  line-height: 26px;
+}
+
+.error-boundary {
+  background-color: #f44336;
+  color: #fff;
+  height: 100%;
+  padding: 20px;
+}

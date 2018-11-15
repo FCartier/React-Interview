@@ -1,0 +1,7 @@
+ Instructions
+ 
+ 1. Take a look at feed.js. Use it to subscribe to some stocks</li>
+ 2. Create a user interface that allows a user to subscribe to a stock</li>
+ 3. Display the updates provided by the server in a simple table</li>
+ 4. Highlight stocks that have changed, green for an increase, red for a decrease (Just change the colour of the text)</li>
+ 5. Add a column with a button for each row thats unsubsribes to its symbol</li
