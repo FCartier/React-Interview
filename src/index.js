@@ -1,7 +1,11 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import App from "./solution/App";
+import { createStore } from 'redux';
+import configureStore from './solution/store/configureStore';
 import "./index.css";
+import rootReducer from './solution/reducers/rootReducer';
+import {Provider} from 'react-redux';
 
 class ErrorBoundary extends React.Component {
   constructor() {
@@ -32,9 +36,13 @@ class ErrorBoundary extends React.Component {
   }
 }
 
+const store = configureStore();
+
 ReactDOM.render(
-  <ErrorBoundary>
-    <App />
-  </ErrorBoundary>,
+  <Provider store={store}>
+    <ErrorBoundary>
+      <App />
+    </ErrorBoundary>
+  </Provider>,
   document.getElementById("root")
 );

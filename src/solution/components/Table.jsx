@@ -1,36 +1,27 @@
 import React from "react";
 import feed from "../feed";
-//import Row from './Row';
+import { connect } from 'react-redux';
+import { bindActionCreators } from 'redux';
+import PropTypes from 'prop-types';
+import * as stockActions from '../actions/stockActions';
 
 class Table extends React.Component {
-    constructor() {
-        super();
+    constructor(props) {
+        super(props);
         this.symbolInput = React.createRef();
-        this.state = {
-            stocks: ["BA", "MCD"],
-            stockUpdates: {}
-        }
     }
 
     componentDidMount() {
-        // For testing purpose ony, reñove it before delivery
-        feed.subscribe(this.state.stocks);
-        feed.onChange((stock) =>
-            this.setState(({ stockUpdates }) => ({ stockUpdates: { ...stockUpdates, [stock.symbol]: stock } }))
-        );
+        feed.onChange((stock) => this.props.stockActions.updateStock(stock));
     }
 
     handleSubscribe() {
         const newSymbol = this.symbolInput.current.value;
-        feed.subscribe(newSymbol);
-        this.setState(({ stocks }) => (stocks.indexOf(newSymbol) > -1 ? stocks : { stocks: [...this.state.stocks, newSymbol] }))
+        this.props.stockActions.subscribeStock(newSymbol);
     }
 
     handleUnsubscribe(stock) {
-        this.setState(({ stocks }) => (
-            { stocks: stocks.filter((item) => item !== stock.symbol) })
-        );
-        feed.unsubscribe(stock.symbol);
+        this.props.stockActions.unsubscribeStock(stock.symbol);
     }
 
     setColor(value) {
@@ -59,9 +50,9 @@ class Table extends React.Component {
                         </thead>
                         <tbody>
                             {
-                                this.state.stocks
-                                    .filter((stock) => this.state.stockUpdates[stock])
-                                    .map((stock) => this.state.stockUpdates[stock])
+                                this.props.stocks
+                                    .filter((stock) => this.props.stockUpdates[stock])
+                                    .map((stock) => this.props.stockUpdates[stock])
                                     .map((stock) => (
                                         <tr key={stock.symbol}>
                                             <td>{stock.symbol}</td>
@@ -82,4 +73,25 @@ class Table extends React.Component {
     }
 }
 
-export default Table;
+Table.propTypes = {
+    stockActions: PropTypes.object,
+    stocks: PropTypes.array
+};
+
+function mapStateToProps(state) {
+    return {
+        stocks: state.stockReducer.stocks,
+        stockUpdates: state.stockReducer.stockUpdates
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {
+        stockActions: bindActionCreators(stockActions, dispatch)
+    };
+}
+
+export default connect(
+    mapStateToProps,
+    mapDispatchToProps
+)(Table);
