@@ -5,10 +5,41 @@ import { bindActionCreators } from 'redux';
 import PropTypes from 'prop-types';
 import * as stockActions from '../actions/stockActions';
 
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+
+import UnsubscribeRenderer from './UnsubscribeRenderer';
+import ChangeRenderer from "./ChangeRenderer";
+
 class Table extends React.Component {
     constructor(props) {
         super(props);
         this.symbolInput = React.createRef();
+        this.state = {
+            columnDefs: [
+                { headerName: "Symbol", field: "symbol" },
+                { headerName: "Open", field: "open" },
+                { headerName: "High", field: "high" },
+                { headerName: "Low", field: "low" },
+                { headerName: "Last", field: "last" },
+                { 
+                    headerName: "Change", 
+                    field: "change",
+                    cellRenderer: "changeRenderer",
+                },
+                {
+                    headerName: "Action",
+                    field: "action",
+                    cellRenderer: "unsubscribeRenderer",
+                }
+            ],
+            context: { componentParent: this },
+            frameworkComponents: {
+                unsubscribeRenderer: UnsubscribeRenderer,
+                changeRenderer: ChangeRenderer
+            }
+        }
     }
 
     componentDidMount() {
@@ -21,11 +52,13 @@ class Table extends React.Component {
     }
 
     handleUnsubscribe(stock) {
-        this.props.stockActions.unsubscribeStock(stock.symbol);
+        this.props.stockActions.unsubscribeStock(stock);
     }
 
-    setColor(value) {
-        return value > 0 ? "green-text" : "red-text";
+    customStocks() {
+        return this.props.stocks
+            .filter((stock) => this.props.stockUpdates[stock])
+            .map((stock) => this.props.stockUpdates[stock])
     }
 
     render() {
@@ -36,37 +69,18 @@ class Table extends React.Component {
                     <input type="button" value="Subscribe" onClick={() => this.handleSubscribe()} />
                 </div>
                 <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Symbol</th>
-                                <th>Open</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>Last</th>
-                                <th>Change</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                this.props.stocks
-                                    .filter((stock) => this.props.stockUpdates[stock])
-                                    .map((stock) => this.props.stockUpdates[stock])
-                                    .map((stock) => (
-                                        <tr key={stock.symbol}>
-                                            <td>{stock.symbol}</td>
-                                            <td>{stock.open}</td>
-                                            <td>{stock.high}</td>
-                                            <td>{stock.low}</td>
-                                            <td>{stock.last}</td>
-                                            <td className={this.setColor(stock.change)}>{stock.change}</td>
-                                            <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
-                                        </tr>
-                                    ))
-                            }
-                        </tbody>
-                    </table>
+                    <div style={{ height: '150px', width: '87.6rem' }} className="ag-theme-balham">
+                        {/* Grid Definition */}
+                        <AgGridReact
+                            columnDefs={this.state.columnDefs}
+                            rowData={this.customStocks()}
+                            enableSorting={true}
+                            enableFilter={true}
+                            context={this.state.context}
+                            frameworkComponents={this.state.frameworkComponents}
+                        >
+                        </AgGridReact>
+                    </div>
                 </div>
             </div>
         );
