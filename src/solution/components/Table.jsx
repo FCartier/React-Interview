@@ -1,16 +1,16 @@
 import React from "react";
 import feed from "../feed";
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import PropTypes from 'prop-types';
 import * as stockActions from '../actions/stockActions';
 
 import { AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-balham.css';
 
-import UnsubscribeRenderer from './UnsubscribeRenderer';
 import ChangeRenderer from "./ChangeRenderer";
+import UnsubscribeRenderer from './UnsubscribeRenderer';
 
 class Table extends React.Component {
     constructor(props) {
@@ -23,8 +23,8 @@ class Table extends React.Component {
                 { headerName: "High", field: "high" },
                 { headerName: "Low", field: "low" },
                 { headerName: "Last", field: "last" },
-                { 
-                    headerName: "Change", 
+                {
+                    headerName: "Change",
                     field: "change",
                     cellRenderer: "changeRenderer",
                 },
@@ -32,6 +32,7 @@ class Table extends React.Component {
                     headerName: "Action",
                     field: "action",
                     cellRenderer: "unsubscribeRenderer",
+                    autoHeight: true
                 }
             ],
             context: { componentParent: this },
@@ -63,13 +64,18 @@ class Table extends React.Component {
 
     render() {
         return (
-            <div>
-                <div>
-                    <input type="text" ref={this.symbolInput} />
-                    <input type="button" value="Subscribe" onClick={() => this.handleSubscribe()} />
+            <div class='ui vertically grid centered'>
+                <h1 class='ui header'>Subscribe to some stocks</h1>
+                <div class='row'>
+                    <div class='ui action input'>
+                        <input type='text' placeholder='Search...' ref={this.symbolInput} />
+                        <button class='ui button primary' role='button' onClick={() => this.handleSubscribe()}>
+                            Subscribe
+                    </button>
+                    </div>
                 </div>
-                <div>
-                    <div style={{ height: '150px', width: '87.6rem' }} className="ag-theme-balham">
+                <div class='row tableRow'>
+                    <div style={{ height: '50em', width: '115em' }} className="ag-theme-balham">
                         {/* Grid Definition */}
                         <AgGridReact
                             columnDefs={this.state.columnDefs}
@@ -78,10 +84,12 @@ class Table extends React.Component {
                             enableFilter={true}
                             context={this.state.context}
                             frameworkComponents={this.state.frameworkComponents}
+                            rowHeight={40}
                         >
                         </AgGridReact>
                     </div>
                 </div>
+
             </div>
         );
     }

@@ -1,4 +1,4 @@
-import React, {Component} from "react";
+import React, { Component } from "react";
 
 export default class UnsubscribeRenderer extends Component {
     constructor(props) {
@@ -13,7 +13,11 @@ export default class UnsubscribeRenderer extends Component {
 
     render() {
         return (
-            <span><button style={{height: 20, lineHeight: 0.5}} onClick={this.invokeParentMethod} className="btn btn-info">Unsubscribe</button></span>
+            <span>
+                <button class='ui button small' onClick={this.invokeParentMethod}>
+                    Unsubscribe
+                </button>
+            </span>
         );
     }
 };
