@@ -1,14 +1,46 @@
 import React from "react";
 import feed from "../feed";
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import PropTypes from 'prop-types';
 import * as stockActions from '../actions/stockActions';
+
+import { AgGridReact } from 'ag-grid-react';
+import 'ag-grid-community/dist/styles/ag-grid.css';
+import 'ag-grid-community/dist/styles/ag-theme-balham.css';
+
+import ChangeRenderer from "./ChangeRenderer";
+import UnsubscribeRenderer from './UnsubscribeRenderer';
 
 class Table extends React.Component {
     constructor(props) {
         super(props);
         this.symbolInput = React.createRef();
+        this.state = {
+            columnDefs: [
+                { headerName: "Symbol", field: "symbol" },
+                { headerName: "Open", field: "open" },
+                { headerName: "High", field: "high" },
+                { headerName: "Low", field: "low" },
+                { headerName: "Last", field: "last" },
+                {
+                    headerName: "Change",
+                    field: "change",
+                    cellRenderer: "changeRenderer",
+                },
+                {
+                    headerName: "Action",
+                    field: "action",
+                    cellRenderer: "unsubscribeRenderer",
+                    autoHeight: true
+                }
+            ],
+            context: { componentParent: this },
+            frameworkComponents: {
+                unsubscribeRenderer: UnsubscribeRenderer,
+                changeRenderer: ChangeRenderer
+            }
+        }
     }
 
     componentDidMount() {
@@ -21,53 +53,43 @@ class Table extends React.Component {
     }
 
     handleUnsubscribe(stock) {
-        this.props.stockActions.unsubscribeStock(stock.symbol);
+        this.props.stockActions.unsubscribeStock(stock);
     }
 
-    setColor(value) {
-        return value > 0 ? "green-text" : "red-text";
+    customStocks() {
+        return this.props.stocks
+            .filter((stock) => this.props.stockUpdates[stock])
+            .map((stock) => this.props.stockUpdates[stock])
     }
 
     render() {
         return (
-            <div>
-                <div>
-                    <input type="text" ref={this.symbolInput} />
-                    <input type="button" value="Subscribe" onClick={() => this.handleSubscribe()} />
+            <div class='ui vertically grid centered'>
+                <h1 class='ui header'>Subscribe to some stocks</h1>
+                <div class='row'>
+                    <div class='ui action input'>
+                        <input type='text' placeholder='Search...' ref={this.symbolInput} />
+                        <button class='ui button primary' role='button' onClick={() => this.handleSubscribe()}>
+                            Subscribe
+                    </button>
+                    </div>
                 </div>
-                <div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Symbol</th>
-                                <th>Open</th>
-                                <th>High</th>
-                                <th>Low</th>
-                                <th>Last</th>
-                                <th>Change</th>
-                                <th></th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {
-                                this.props.stocks
-                                    .filter((stock) => this.props.stockUpdates[stock])
-                                    .map((stock) => this.props.stockUpdates[stock])
-                                    .map((stock) => (
-                                        <tr key={stock.symbol}>
-                                            <td>{stock.symbol}</td>
-                                            <td>{stock.open}</td>
-                                            <td>{stock.high}</td>
-                                            <td>{stock.low}</td>
-                                            <td>{stock.last}</td>
-                                            <td className={this.setColor(stock.change)}>{stock.change}</td>
-                                            <td><input type="button" value="Unsubscribe" onClick={() => this.handleUnsubscribe(stock)} /></td>
-                                        </tr>
-                                    ))
-                            }
-                        </tbody>
-                    </table>
+                <div class='row tableRow'>
+                    <div style={{ height: '50em', width: '115em' }} className="ag-theme-balham">
+                        {/* Grid Definition */}
+                        <AgGridReact
+                            columnDefs={this.state.columnDefs}
+                            rowData={this.customStocks()}
+                            enableSorting={true}
+                            enableFilter={true}
+                            context={this.state.context}
+                            frameworkComponents={this.state.frameworkComponents}
+                            rowHeight={40}
+                        >
+                        </AgGridReact>
+                    </div>
                 </div>
+
             </div>
         );
     }
