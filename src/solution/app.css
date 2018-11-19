@@ -13,3 +13,5 @@
     width: 100em;
     height: 100px;
 }
+
+html, body { margin: 0; padding: 0; height: 100%; }

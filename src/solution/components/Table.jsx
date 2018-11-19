@@ -64,17 +64,17 @@ class Table extends React.Component {
 
     render() {
         return (
-            <div class='ui vertically grid centered'>
-                <h1 class='ui header'>Subscribe to some stocks</h1>
-                <div class='row'>
-                    <div class='ui action input'>
+            <div className='ui vertically grid centered'>
+                <h1 className='ui header'>Subscribe to some stocks</h1>
+                <div className='row'>
+                    <div className='ui action input'>
                         <input type='text' placeholder='Search...' ref={this.symbolInput} />
-                        <button class='ui button primary' role='button' onClick={() => this.handleSubscribe()}>
+                        <button className='ui button primary' onClick={() => this.handleSubscribe()}>
                             Subscribe
                     </button>
                     </div>
                 </div>
-                <div class='row tableRow'>
+                <div className='row tableRow'>
                     <div style={{ height: '50em', width: '115em' }} className="ag-theme-balham">
                         {/* Grid Definition */}
                         <AgGridReact
@@ -89,7 +89,6 @@ class Table extends React.Component {
                         </AgGridReact>
                     </div>
                 </div>
-
             </div>
         );
     }

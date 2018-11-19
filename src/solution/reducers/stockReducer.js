@@ -18,7 +18,6 @@ export default function stockReducer(state = initialState, action) {
             //Remove the stock
             console.log('UNSUBSCRIBE_TO_STOCK')
             return { ...state, stocks: state.stocks.filter((item) => item !== action.symbol)}
-            break;
 
         default:
             return state;

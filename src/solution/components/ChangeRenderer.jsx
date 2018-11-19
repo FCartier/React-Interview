@@ -1,10 +1,6 @@
 import React, {Component} from "react";
 
 export default class ChangeRenderer extends Component {
-    constructor(props) {
-        super(props);
-    }
-
     setColor(value) {
         return value > 0 ? "green-text" : "red-text";
     }
